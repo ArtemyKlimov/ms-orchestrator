@@ -1,0 +1,38 @@
+orchestrator:
+  artemis:
+    url: tcp://localhost:60001
+    user: artemisusr
+    password: qwe123
+    clientId: orchestrator
+    inputQueue: ART.TEST.456.IN
+    outputQueue: ART.TEST.456.OUT
+    errorQueue: ART.TEST.456.RS
+  steps:
+    - name: SrvCheck
+      entrypoint: true
+      className: ru.vtb.uip.orchestrator.modules.SrvCheck
+      beanName: SrvCheck
+      success: SrvPay
+      failure: SrvAbort
+    - name: SrvPay
+      className: ru.vtb.uip.orchestrator.modules.SrvPay
+      beanName: SrvPay
+      success: SrvPost
+      failure: SrvAbort
+    - name: SrvPost
+      className: ru.vtb.uip.modules.SrvPost
+      success: out
+      failure: SrvAbort
+    - name: SrvAbort
+      className: ru.vtb.uip.orchestrator.SrvAbort
+      success: ''
+      failure: ''
+    - name: SrvFormatResponse
+      className: ru.vtb.uip.orchestrator.SrvFormatResponse
+      beanName: SrvFormatResponse
+      success: ''
+      failure: ''
+srvCheck:
+  url: http://localhost:8080
+  param1: param11
+  param2: param12
